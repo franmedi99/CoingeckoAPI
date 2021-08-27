@@ -1,0 +1,6 @@
+creando la base de datos 
+
+
+
+          ************** Creando tabla users **************
+CREATE TABLE `coingecko`.`users` ( `id_user` INT NOT NULL AUTO_INCREMENT ,  `username` VARCHAR(100) NOT NULL ,  `name` VARCHAR(300) NOT NULL ,  `surname` VARCHAR(100) NOT NULL ,  `password` VARCHAR(100) NOT NULL ,  `coinpreference` VARCHAR(100) NOT NULL ,    PRIMARY KEY  (`id_user`),    UNIQUE  (`username`)) ENGINE = InnoDB;

@@ -4,6 +4,7 @@ require('dotenv').config();
 
 //Settings
 const app = express();
+app.use(express.json());
 app.set('port', process.env.PORT || 3000);
 app.use(morgan('dev'));
 
