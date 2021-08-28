@@ -14,16 +14,13 @@ app.use(morgan('dev'));
 
 
 //Routes
-app.use('/api/',require('./routes/Users'));
-
-
+app.use('/api/',require('./routes/Users'),require('./routes/Crypto'));
 
 
 //initializing server
-
      app.listen(app.get('port'), () => {
      console.log(colors.underline.magenta('Environment:', process.env.NODE_ENV));
-     console.log(colors.underline.blue('server on port '+app.get('port')))
+     console.log(colors.underline.blue('server on port '+app.get('port')));
 });
 
 

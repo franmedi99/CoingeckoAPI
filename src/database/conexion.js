@@ -1,8 +1,6 @@
 const mysql = require('mysql');
 const { promisify }= require('util');
 const { database } = require('./keys');
-const express = require('express');
-const app = express();
 var colors = require('colors');
 const pool = mysql.createPool(database);
 
@@ -25,7 +23,7 @@ pool.getConnection((err, connection) => {
   if (connection) connection.release();
   console.log(colors.underline.green('DB is Connected'));
    
-  return app.emit("ready")
+
      
 });
 

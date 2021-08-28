@@ -9,6 +9,10 @@ router.post('/register',UserController.register)
 
 router.post('/login',passport.authenticate('local',{session : false}),UserController.login)
 
-router.post("/list",passport.authenticate('jwt',{session : false}),UserController.list)
+router.post('/logout',passport.authenticate('jwt',{session : false}),UserController.logout)
+
+
+
+
 
  module.exports = router;

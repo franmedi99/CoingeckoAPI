@@ -32,11 +32,9 @@ if(Rows.length===0){
     const ValidPassword = await helpers.matchPassword(password,PasswordDatabase);
     let Message = ""
     if(ValidPassword){
-        console.log("valid password")
         Message = "Welcome "+NameOfUser
         return done(null,user,Message)
     }else{
-        console.log("invalid password")
         Message = "Incorrect password"
         done(null, false,Message);
     }
