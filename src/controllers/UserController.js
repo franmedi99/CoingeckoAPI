@@ -1,10 +1,9 @@
 const UserController = {};
 const JWT = require('jsonwebtoken');
 const pool = require('../database/conexion');
-const helpers = require('../helpers/bcrypt');
-require('../lib/passport');
 
-UserController.signToken = userID =>{
+
+const signToken = userID =>{
      return JWT.sign({
          iss : "franmedi99",
          sub : userID
@@ -26,6 +25,20 @@ UserController.register = async(req, res)=>{
           res.status(201).json({message : {msgBody : "Usuario Registrado Satisfactoriamente", msgError: false}});
      }
 }
+}
+
+UserController.login =(req,res)=>{
+     if(req.isAuthenticated()){
+     const {id_user,username,name,surname,coinpreference} = req.user;
+     const token = signToken(id_user);
+     res.cookie('access_token',token,{httpOnly: true, sameSite:true}); 
+     res.status(200).json({isAuthenticated : true,user : {id_user}});
+     }
+};
+
+UserController.list = (req,res)=>{
+
+     res.status(200).json({result:"list"});
 }
 
 module.exports = UserController;

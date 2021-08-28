@@ -6,11 +6,11 @@ const helpers = require('../helpers/bcrypt');
 
 
 const cookieExtractor = req =>{
-    let Token = null;
+    let token = null;
     if(req && req.cookies){
-        Token = req.cookies["access_token"];
+        token = req.cookies["access_token"];
     }
-    return Token;
+    return token;
 }
 
 // authenticated local strategy using username and password
@@ -19,12 +19,27 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
 }, async (username, password, done) =>{
 //confirm match
-const user = await pool.query('SELECT * FROM users WHERE username = ?', [username])
-if(!user){
-    const Message = "user not found"
+const Rows = await pool.query('SELECT * FROM users WHERE username = ?', [username])
+
+
+if(Rows.length===0){
+    const Message = "User not found"
     return done(null,false,Message);
 }else{
-    helpers.comparePassword(password,done);
+    const user = Rows[0];
+    const NameOfUser = user.name +" "+user.surname; 
+    const PasswordDatabase = user.password
+    const ValidPassword = await helpers.matchPassword(password,PasswordDatabase);
+    let Message = ""
+    if(ValidPassword){
+        console.log("valid password")
+        Message = "Welcome "+NameOfUser
+        return done(null,user,Message)
+    }else{
+        console.log("invalid password")
+        Message = "Incorrect password"
+        done(null, false,Message);
+    }
 }
 
 }));
@@ -34,9 +49,9 @@ if(!user){
 // authorization 
 passport.use(new JwtStrategy({
      jwtFromRequest : cookieExtractor,
-     secretOrKey : process.env.JWTPASSWORD || "Default"
+     secretOrKey : "franmedi99"
  },(payload,done)=>{
-     User.findById({_id : payload.sub},(err,user)=>{
+    pool.query('SELECT * FROM users WHERE id_user = ?', [payload.sub],(err,user)=>{
          if(err)
              return done(err,false);
          if(user)
