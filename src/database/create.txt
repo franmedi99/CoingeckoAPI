@@ -1,6 +1,12 @@
-creando la base de datos 
+          ************** create database **************
+CREATE DATABASE coingecko
 
 
-
-          ************** Creando tabla users **************
+          ************** Create tables **************
 CREATE TABLE `coingecko`.`users` ( `id_user` INT NOT NULL AUTO_INCREMENT ,  `username` VARCHAR(100) NOT NULL ,  `name` VARCHAR(300) NOT NULL ,  `surname` VARCHAR(100) NOT NULL ,  `password` VARCHAR(100) NOT NULL ,  `coinpreference` VARCHAR(100) NOT NULL ,    PRIMARY KEY  (`id_user`),    UNIQUE  (`username`)) ENGINE = InnoDB;
+CREATE TABLE `coingecko`.`coins` ( `id_coin` INT NULL AUTO_INCREMENT , `id_namecoin` VARCHAR(200) NOT NULL , PRIMARY KEY (`id_coin`), UNIQUE (`id_namecoin`)) ENGINE = InnoDB;
+CREATE TABLE `coingecko`.`users-coins` ( `id_row` INT NULL AUTO_INCREMENT , `id_namecoin` INT NULL , `id_user` INT NULL , PRIMARY KEY (`id_row`)) ENGINE = InnoDB;
+ 
+ 
+          ************** Creando relation of tables **************
+ ALTER TABLE `users-coins` ADD FOREIGN KEY (`id_namecoin`) REFERENCES `coins`(`id_coin`) ON DELETE RESTRICT ON UPDATE RESTRICT; ALTER TABLE `users-coins` ADD FOREIGN KEY (`id_user`) REFERENCES `users`(`id_user`) ON DELETE RESTRICT ON UPDATE RESTRICT;
