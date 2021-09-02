@@ -11,7 +11,7 @@ router.post('/login',passport.authenticate('local',{session : false}),UserContro
 
 router.post('/logout',passport.authenticate('jwt',{session : false}),UserController.logout)
 
-
+router.post('/deleteaccount',passport.authenticate('jwt',{session : false}),UserController.deleteAccount)
 
 
 

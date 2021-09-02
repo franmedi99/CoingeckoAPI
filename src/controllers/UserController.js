@@ -1,7 +1,7 @@
 const UserController = {};
 const JWT = require('jsonwebtoken');
 const pool = require('../database/conexion');
-
+const helpers = require('../helpers/bcrypt')
 
 UserController.signToken = userID => {
      return JWT.sign({
@@ -39,6 +39,13 @@ UserController.login = (req, res) => {
 UserController.logout = (req, res) => {
      res.clearCookie('access_token');
      res.json({ user: { id_user: "", username: "", name: "", surname: "", coinpreference: "" }, success: true });
+}
+
+UserController.deleteAccount = async(req, res) => {
+     const { id_user } = req.user[0];
+     await pool.query('DELETE FROM users WHERE id_user = ?', [id_user]);
+     res.status(201).json({ message: { msgBody: "Account successfully deleted", msgError: false } });
+
 }
 
 module.exports = UserController;

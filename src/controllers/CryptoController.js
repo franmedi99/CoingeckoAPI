@@ -1,6 +1,9 @@
 const CryptoController = {};
 const pool = require('../database/conexion');
 const axios = require('axios');
+const CoinGecko = require('coingecko-api');
+const CoinGeckoClient = new CoinGecko();
+
 
 CryptoController.setcoinpreference = async (req, res) => {
      const { coinpreference } = req.body;
@@ -12,20 +15,23 @@ CryptoController.setcoinpreference = async (req, res) => {
                await pool.query('UPDATE users set coinpreference = ? WHERE id_user = ?', [coinpreference, id_user]);
                res.status(200).json({ message: "Currency preference successfully updated to " + coinpreference });
           } else {
-               res.status(401).json({ message: "The currency preference can only be ars,eur or usd!!" });
+               res.status(401).json({ message: 'The currency preference can only be "ars","eur" or "usd"!!' });
           }
      }
 
 }
 
+
 CryptoController.list = async (req, res) => {
+
      const { coinpreference } = req.user[0];
      var { page } = req.body
      if (coinpreference == null || page == null)
           res.status(401).json({ message: "first choose a currency preference and send a page!!" });
      else {
           var object = []
-          const { data } = await axios('https://api.coingecko.com/api/v3/coins/markets?vs_currency=' + coinpreference + '&order=market_cap_desc&per_page=100&page=' + page + '&sparkline=false')
+          const { data } = await CoinGeckoClient.coins.markets({ vs_currency: "ars", page })
+
           data.forEach(element => {
                object.push({ "id": element.id, "name": element.name, "symbol": element.symbol, "price": element.current_price, "image": element.image, "last_updated": element.last_updated })
           });
@@ -37,12 +43,45 @@ CryptoController.list = async (req, res) => {
 
 CryptoController.top = async (req, res) => {
      const { id_user } = req.user[0]
-     const { order } = req.body
+     var object = []
+     var { order } = req.body
+     var order = order || "desc"
      if (order === "desc" || order === "asc" || order === "DESC" || order === "ASC") {
-          const Result = await pool.query('SELECT coins.name,coins.symbol,coins.price_ars,coins.price_usd,coins.price_eur,coins.image,coins.last_updated FROM coins INNER JOIN users_coins ON  users_coins.id_coin = coins.id_coin wHERE users_coins.id_user = ? ORDER BY coins.price_usd  ' + order + '', [id_user]);
-          res.status(201).json(Result);
-     }
-     else {
+          const Result = await pool.query('SELECT coins.id_namecoin FROM coins INNER JOIN users_coins ON  users_coins.id_coin = coins.id_coin wHERE users_coins.id_user = ?', [id_user]);
+          if (Result.length === 0)
+               return res.status(201).json([])
+
+          Result.forEach(async (element) => {
+               const { data } = await CoinGeckoClient.coins.fetch(element.id_namecoin, {})
+               object.push({ "id": data.id, "name": data.name, "symbol": data.symbol, "image": data.image.large, "last_updated": data.last_updated, "usd": data.market_data.current_price.usd, "ars": data.market_data.current_price.ars, "eur": data.market_data.current_price.eur })
+
+               if (object.length === Result.length) {
+                    if (order === "desc" || order === "DESC") {
+                         object.sort((a, b) => {
+                              if (a.usd > b.usd) { return -1 }
+                              if (a.usd < b.usd) { return 1 }
+                              return 0
+                         })
+                    } else {
+                         object.sort((a, b) => {
+                              if (a.usd < b.usd) { return -1 }
+                              if (a.usd > b.usd) { return 1 }
+                              return 0
+                         })
+                    }
+
+                    res.status(201).json(object)
+               }
+
+          });
+
+
+
+
+
+
+
+     } else {
           res.status(401).json({ message: "the order can only be asc or desc" });
      }
 
@@ -59,20 +98,19 @@ CryptoController.newcrypto = async (req, res) => {
           if (UserTop.length >= 26) {
                res.status(400).json({ message: "the limit of cryptocurrencies per user is 25" });
           } else {
-               var ObjectAPI = await axios('https://api.coingecko.com/api/v3/coins/' + cryptoID, { validateStatus: false })
+               console.log(cryptoID)
+               var ObjectAPI = await CoinGeckoClient.coins.fetch(cryptoID, {});
                var ObjectAPI = ObjectAPI.data
                if (ObjectAPI.error)
                     res.status(404).json({ message: "Please send a valid ID coin" });
                else {
-                    const price = ObjectAPI.market_data.current_price
-                    const NewCoin = { "id_namecoin": ObjectAPI.id, "name": ObjectAPI.name, "symbol": ObjectAPI.symbol, "price_ars": price.ars, "price_usd": price.usd, "price_eur": price.eur, "image": ObjectAPI.image.large, "last_updated": ObjectAPI.last_updated }
+                    const NewCoin = { "id_namecoin": ObjectAPI.id }
                     const VerifyResult = await pool.query('SELECT * FROM coins WHERE id_namecoin = ?', [cryptoID]);
                     if (VerifyResult.length >= 1) {
                          const VerifyTopCoin = await pool.query('SELECT * FROM users_coins WHERE id_user = ? AND id_coin = ?', [user.id_user, VerifyResult[0].id_coin]);
                          if (VerifyTopCoin.length >= 1)
                               res.status(401).json({ message: "This coin is already at its top" });
                          else {
-                              pool.query('UPDATE coins set ? WHERE id_coin = ?', [NewCoin, VerifyResult[0].id_coin]);
                               const UserCoin = { "id_coin": VerifyResult[0].id_coin, "id_user": user.id_user }
                               pool.query('INSERT into users_coins SET ?', UserCoin);
                               res.status(200).json({ message: "Cryptocurrency added successfully" });

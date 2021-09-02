@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 var colors = require('colors');
 const cookieParser = require('cookie-parser');
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
      require('dotenv').config();
  }
 //Settings
@@ -27,3 +27,4 @@ app.use('/api/',require('./routes/Users'),require('./routes/Crypto'));
 
 
 
+module.exports =app;
