@@ -41,7 +41,7 @@ UserController.logout = (req, res) => {
      res.json({ user: { id_user: "", username: "", name: "", surname: "", coinpreference: "" }, success: true });
 }
 
-UserController.deleteAccount = async(req, res) => {
+UserController.deleteAccount = async (req, res) => {
      const { id_user } = req.user[0];
      await pool.query('DELETE FROM users WHERE id_user = ?', [id_user]);
      res.status(201).json({ message: { msgBody: "Account successfully deleted", msgError: false } });

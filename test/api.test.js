@@ -15,7 +15,7 @@ describe('POST /users', () => {
                     done();
                })
      })
-/*
+
      it("respond with 201 when user has been created", done => {
           const data = { "username": "Testuser", "name": "test", "surname": "test", "password": "123" }
           request(app)
@@ -30,7 +30,7 @@ describe('POST /users', () => {
                })
 
      })
-*/
+
      it("respond with 400 when user already exists", done => {
           const data = { "username": "Testuser", "name": "test", "surname": "test", "password": "123" }
           request(app)
@@ -64,34 +64,33 @@ describe('POST /login', () => {
 
 
      it("respond with 200 when user sendig data user", done => {
-          const data = { "username": "Testuser","password": "123" }
+          const data = { "username": "Testuser", "password": "123" }
           request(app)
                .post('/api/login')
                .send(data)
                .set('Accept', 'application/json')
-               .expect((res)=>{res.body})
+               .expect((res) => { res.body })
                .expect(200)
-               .expect((res)=>{'set-cookie',res.headers['Set-Cookie']})
-               .end((err,res )=> {
+               .expect((res) => { 'set-cookie', res.headers['Set-Cookie'] })
+               .end((err, res) => {
                     if (err) return done(err);
                     cookie = res.headers['set-cookie'];
-                    console.log(cookie)
-                    done();  
+                    done();
 
-                  
+
                })
      })
 })
 
-describe('POST /api/list',()=>{
+describe('POST /api/list', () => {
 
      it("respond with 200 when the user asks for the list of cryptocurrencies", done => {
 
           request(app)
                .post('/api/list')
                .set(cookie)
-               .set({'Accept': 'application/json'})
-               .expect((res)=>{res.body})
+               .set({ 'Accept': 'application/json' })
+               .expect((res) => { res.body })
                .expect(200)
                .end(err => {
                     if (err) return done(err);

@@ -1,6 +1,5 @@
 const CryptoController = {};
 const pool = require('../database/conexion');
-const axios = require('axios');
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
@@ -43,17 +42,18 @@ CryptoController.list = async (req, res) => {
 
 CryptoController.top = async (req, res) => {
      const { id_user } = req.user[0]
-     var object = []
+     let object = []
      var { order } = req.body
      var order = order || "desc"
      if (order === "desc" || order === "asc" || order === "DESC" || order === "ASC") {
-          const Result = await pool.query('SELECT coins.id_namecoin FROM coins INNER JOIN users_coins ON  users_coins.id_coin = coins.id_coin wHERE users_coins.id_user = ?', [id_user]);
+          const Result = await pool.query('SELECT coins.id_coin, coins.id_namecoin FROM coins INNER JOIN users_coins ON  users_coins.id_coin = coins.id_coin WHERE users_coins.id_user = ?', [id_user]);
           if (Result.length === 0)
                return res.status(201).json([])
 
           Result.forEach(async (element) => {
+
                const { data } = await CoinGeckoClient.coins.fetch(element.id_namecoin, {})
-               object.push({ "id": data.id, "name": data.name, "symbol": data.symbol, "image": data.image.large, "last_updated": data.last_updated, "usd": data.market_data.current_price.usd, "ars": data.market_data.current_price.ars, "eur": data.market_data.current_price.eur })
+               object.push({ "id_coin": element.id_coin, "id": data.id, "name": data.name, "symbol": data.symbol, "image": data.image.large, "last_updated": data.last_updated, "usd": data.market_data.current_price.usd, "ars": data.market_data.current_price.ars, "eur": data.market_data.current_price.eur })
 
                if (object.length === Result.length) {
                     if (order === "desc" || order === "DESC") {
@@ -74,13 +74,7 @@ CryptoController.top = async (req, res) => {
                }
 
           });
-
-
-
-
-
-
-
+          
      } else {
           res.status(401).json({ message: "the order can only be asc or desc" });
      }
@@ -128,6 +122,21 @@ CryptoController.newcrypto = async (req, res) => {
 
 }
 
+
+CryptoController.deleteoftop = async (req, res) => {
+     let { id_coin } = req.params;
+     const { id_user } = req.user[0];
+     const Result = await pool.query('SELECT * FROM users_coins WHERE id_user = ? AND id_coin = ?', [id_user, id_coin]);
+     if (Result.length === 0)
+          return res.status(401).json({ message: "Unauthorized" });
+
+     await pool.query('DELETE FROM users_coins WHERE id_user = ? AND id_coin = ?', [id_user, id_coin]);
+     res.status(201).json({ message: "cryptocurrency successfully deleted" });
+
+
+
+
+}
 
 
 

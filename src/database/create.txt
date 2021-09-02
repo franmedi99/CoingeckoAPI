@@ -9,4 +9,4 @@ CREATE TABLE `coingecko`.`users-coins` ( `id_row` INT NULL AUTO_INCREMENT , `id_
  
  
           ************** Creando relation of tables **************
- ALTER TABLE `users-coins` ADD FOREIGN KEY (`id_namecoin`) REFERENCES `coins`(`id_coin`) ON DELETE RESTRICT ON UPDATE RESTRICT; ALTER TABLE `users-coins` ADD FOREIGN KEY (`id_user`) REFERENCES `users`(`id_user`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ ALTER TABLE `users-coins` ADD FOREIGN KEY (`id_coin`) REFERENCES `coins`(`id_coin`) ON DELETE RESTRICT ON UPDATE RESTRICT; ALTER TABLE `users-coins` ADD FOREIGN KEY (`id_user`) REFERENCES `users`(`id_user`) ON DELETE RESTRICT ON UPDATE RESTRICT;
