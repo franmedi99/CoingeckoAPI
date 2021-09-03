@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test mocha test/api.test.js --exit",
+    "test": "cross-env NODE_ENV=test mocha --timeout 10000 test/api.test.js --exit",
     "dev": "cross-env NODE_ENV=development nodemon src/index.js",
     "start": "cross-env NODE_ENV=production node src/index.js",
     "test2": "cross-env NODE_ENV=test mocha test/prueba.test.js --exit"
@@ -34,6 +34,7 @@
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "should": "^13.2.3",
     "supertest": "^6.1.6"
   },
   "devDependencies": {

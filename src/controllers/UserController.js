@@ -9,10 +9,10 @@ UserController.signToken = userID => {
           sub: userID
      }, "franmedi99", { expiresIn: "3h" });
 }
-
+//envia a la base de datos un nuevo usuario
 UserController.register = async (req, res) => {
      const { username, name, surname, password } = req.body;
-     if (username == null || name == null || surname == null || password == null) {
+     if (username == null || name == null || surname == null || password == null || username === "" || name === "" || surname === "" || password ==="") {
           res.status(400).json({ message: { msgBody: "Please complete all fields", msgError: true } });
      } else {
           const UserResult = await pool.query('SELECT * FROM users WHERE username = ?', [username])
@@ -44,7 +44,7 @@ UserController.logout = (req, res) => {
 UserController.deleteAccount = async (req, res) => {
      const { id_user } = req.user[0];
      await pool.query('DELETE FROM users WHERE id_user = ?', [id_user]);
-     res.status(201).json({ message: { msgBody: "Account successfully deleted", msgError: false } });
+     res.status(200).json({ message: { msgBody: "Account successfully deleted", msgError: false } });
 
 }
 
