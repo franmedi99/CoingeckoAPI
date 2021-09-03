@@ -1,15 +1,21 @@
+//definiendo modulo para exportar
 const UserController = {};
+//modulo para usar tokens
 const JWT = require('jsonwebtoken');
+//Base de datos
 const pool = require('../database/conexion');
-const helpers = require('../helpers/bcrypt')
+//Importando funciones para encriptado y verificado
+const helpers = require('../helpers/bcrypt');
 
+
+//Funcion para crear un token
 UserController.signToken = userID => {
      return JWT.sign({
           iss: "franmedi99",
           sub: userID
      }, "franmedi99", { expiresIn: "3h" });
 }
-//envia a la base de datos un nuevo usuario
+//Registra nuevo usuario
 UserController.register = async (req, res) => {
      const { username, name, surname, password } = req.body;
      if (username == null || name == null || surname == null || password == null || username === "" || name === "" || surname === "" || password ==="") {
@@ -27,6 +33,7 @@ UserController.register = async (req, res) => {
      }
 }
 
+//Funcion para verificar autenticacion,setear cookie y enviar objeto de usuario con datos
 UserController.login = (req, res) => {
      if (req.isAuthenticated()) {
           const { id_user, username, name, surname, coinpreference } = req.user;
@@ -36,11 +43,13 @@ UserController.login = (req, res) => {
      }
 };
 
+//Vacia la cookie y arreglo con los datos del usuario
 UserController.logout = (req, res) => {
      res.clearCookie('access_token');
      res.json({ user: { id_user: "", username: "", name: "", surname: "", coinpreference: "" }, success: true });
 }
 
+//Elimina la cuenta propia del usuario
 UserController.deleteAccount = async (req, res) => {
      const { id_user } = req.user[0];
      await pool.query('DELETE FROM users WHERE id_user = ?', [id_user]);

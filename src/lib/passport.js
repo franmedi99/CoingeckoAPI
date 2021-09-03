@@ -4,7 +4,7 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const pool = require('../database/conexion');
 const helpers = require('../helpers/bcrypt');
 
-
+//funcion para extraer datos de una cookie con el valor access_token
 const cookieExtractor = req =>{
     let token = null;
     if(req && req.cookies){
@@ -13,7 +13,7 @@ const cookieExtractor = req =>{
     return token;
 }
 
-// authenticated local strategy using username and password
+// authentica un usuario con una estrategia de logueo
 passport.use(new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password'
@@ -44,7 +44,7 @@ if(Rows.length===0){
 
 
 
-// authorization 
+// Verifica con una estrategia los datos de un token (que se encuentran dentro de una cookie) 
 passport.use(new JwtStrategy({
      jwtFromRequest : cookieExtractor,
      secretOrKey : "franmedi99"

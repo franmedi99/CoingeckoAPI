@@ -4,6 +4,7 @@ const { database } = require('./keys');
 var colors = require('colors');
 const pool = mysql.createPool(database);
 
+//Verifica la conexion y devuelve por consola si esta conectado o no
 pool.getConnection((err, connection) => {
   if (err) {
     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
@@ -27,7 +28,7 @@ pool.getConnection((err, connection) => {
 
 });
 
-// Promisify Pool Querys
+//Crea compatibilidad con asincronismo para un objeto que solo soporta callbacks
 pool.query = promisify(pool.query);
 
 module.exports = pool;

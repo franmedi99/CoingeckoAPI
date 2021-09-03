@@ -1,7 +1,12 @@
+//Crear un servidor de forma sencilla con express
 const express = require('express');
+//Morgan para mostrar por consola todas  las peticiones que llegan al servidor
 const morgan = require('morgan');
+//Colors para pintar por consola mensajes coloridos 
 var colors = require('colors');
+//CookieParser para que la aplicacion acepte trabajar con cookies
 const cookieParser = require('cookie-parser');
+//En el caso que este en modo desarrollo o test se incluya el archivo .env
 if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
      require('dotenv').config();
  }

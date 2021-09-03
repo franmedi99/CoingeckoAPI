@@ -1,9 +1,12 @@
 const CryptoController = {};
+//obteniendo base de datos
 const pool = require('../database/conexion');
+
+//Inicializando y definiendo coingecko
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
-
+//actualiza la preferencia de moneda de un usuario
 CryptoController.setcoinpreference = async (req, res) => {
      const { coinpreference } = req.body;
      const { id_user } = req.user[0];
@@ -20,7 +23,7 @@ CryptoController.setcoinpreference = async (req, res) => {
 
 }
 
-
+//obtiene una lista con las primeras 100 criptomonedas
 CryptoController.list = async (req, res) => {
 
      const { coinpreference } = req.user[0];
@@ -38,7 +41,7 @@ CryptoController.list = async (req, res) => {
 
 }
 
-
+//obtiene el top personal de cada usuario
 CryptoController.top = async (req, res) => {
      const { id_user } = req.user[0]
      let object = []
@@ -80,7 +83,7 @@ CryptoController.top = async (req, res) => {
 
 }
 
-
+//agrega una nueva criptomoneda a la base de datos y al usuario
 CryptoController.newcrypto = async (req, res) => {
      const { cryptoID } = req.body;
      const user = req.user[0]
@@ -120,7 +123,7 @@ CryptoController.newcrypto = async (req, res) => {
 
 }
 
-
+//elimina una criptomoneda de un usuario
 CryptoController.deleteoftop = async (req, res) => {
      let { id_coin } = req.params;
      const { id_user } = req.user[0];
