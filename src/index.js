@@ -12,13 +12,16 @@ if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
  }
 //Settings
 const app = express();
+//permitiendo cookies
 app.use(cookieParser());
+//permitiendo objetos JSON
 app.use(express.json());
+//Definiendo puerto
 app.set('port', process.env.PORT || 3000);
 app.use(morgan('dev'));
 
 
-//Routes
+//Rutas
 app.use('/api/',require('./routes/Users'),require('./routes/Crypto'));
 
 
