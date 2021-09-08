@@ -1,11 +1,20 @@
 const {Router} = require('express');
 const router = Router();
+
 const passport = require('passport');
 const UserController = require('../controllers/UserController');
 //Obteniendo todas las estrategias de logeo
 require('../lib/passport');
 
-//Ruta para crear un nuevo usuario
+
+router.get("/example", (req, res) => {
+     console.log("respondiendo")
+     res.send("response");
+})
+
+
+
+
 router.post('/register',UserController.register)
 
 //Ruta para iniciar sesion usando la estrategia local

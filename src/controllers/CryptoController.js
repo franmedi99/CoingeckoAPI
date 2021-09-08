@@ -40,7 +40,7 @@ CryptoController.list = async (req, res) => {
      }
 
 }
-
+/*
 //obtiene el top personal de cada usuario
 CryptoController.top = async (req, res) => {
      const { id_user } = req.user[0]
@@ -82,6 +82,80 @@ CryptoController.top = async (req, res) => {
      }
 
 }
+*/
+
+
+
+
+
+
+
+
+
+CryptoController.top = async (req, res) => {
+     const { id_user } = req.user[0]
+     let object = []
+     let promises = []
+     var { order } = req.body
+     var order = order || "desc"
+     if (order === "desc" || order === "asc" || order === "DESC" || order === "ASC") {
+          const Result = await pool.query('SELECT coins.id_coin, coins.id_namecoin FROM coins INNER JOIN users_coins ON  users_coins.id_coin = coins.id_coin WHERE users_coins.id_user = ?', [id_user]);
+          if (Result.length === 0)
+               return res.status(200).json([])   
+                 
+          Result.forEach(element => {
+               promises.push(CoinGeckoClient.coins.fetch(element.id_namecoin, {}).then(res=>{
+                    object.push({ "id_coin": element.id_coin, "id": res.data.id, "name": res.data.name, "symbol": res.data.symbol, "image": res.data.image.large, "last_updated": res.data.last_updated, "usd": res.data.market_data.current_price.usd, "ars":res.data.market_data.current_price.ars, "eur": res.data.market_data.current_price.eur })
+               }))
+          })
+
+         await  Promise.all(promises)
+
+                    if (order === "desc" || order === "DESC") {
+                         object.sort((prev, next) => {
+                              if (prev.usd > next.usd) { return -1 }
+                              if (prev.usd < next.usd) { return 1 }
+                              return 0
+                         })
+                    } else {
+                         object.sort((prev, next) => {
+                              if (prev.usd < next.usd) { return -1 }
+                              if (prev.usd > next.usd) { return 1 }
+                              return 0
+                         })
+                    }
+               
+
+          setTimeout(()=>{res.status(200).json(object)}, 0);
+     } else {
+          res.status(400).json({ message: "the order can only be asc or desc" });
+     }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //agrega una nueva criptomoneda a la base de datos y al usuario
 CryptoController.newcrypto = async (req, res) => {

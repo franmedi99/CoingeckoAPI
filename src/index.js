@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
      require('dotenv').config();
  }
-//Settings
+//Configuraciones
 const app = express();
 //permitiendo cookies
 app.use(cookieParser());
@@ -21,11 +21,37 @@ app.set('port', process.env.PORT || 3000);
 app.use(morgan('dev'));
 
 
+//---------------------------configuraciones de documentacion------------------------------------
+//Creating documentation page
+const swaggerUI = require("swagger-ui-express");
+const swaggerJsDoc = require("swagger-jsdoc");
+const options = {
+	definition: {
+		openapi: "3.0.0",
+		info: {
+			title: "Francisco Medina API",
+			version: "1.0.0",
+			description: "API que se encargar de dar de alta a usuarios, que estos mismos, creen su propio Top personalizado con el fin de conseguir un seguimiento propio de criptomonedas elegidas por dicho usuario, comparar precios de criptomonedas seleccionadas por el mismo, autenticarlos con JWT y mantener todos los datos de usuarios de forma persistente en una base de datos (MySQL)",
+		},
+		servers: [
+			{
+				url: "http://localhost:3000/api",
+			},
+		],
+	},
+	apis: ["./src/documentation/swagger.js"],
+};
+const specs = swaggerJsDoc(options);
+
+app.use("/doc", swaggerUI.serve, swaggerUI.setup(specs));
+//----------------------------fin de configuraciones de documentacion----------------------------
+
+
 //Rutas
 app.use('/api/',require('./routes/Users'),require('./routes/Crypto'));
 
 
-//initializing server
+//iniciando servidor
      app.listen(app.get('port'), () => {
      console.log(colors.underline.magenta('Environment:', process.env.NODE_ENV));
      console.log(colors.underline.blue('server on port '+app.get('port')));
