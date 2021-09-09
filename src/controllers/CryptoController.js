@@ -96,9 +96,15 @@ CryptoController.top = async (req, res) => {
                return res.status(200).json([])
 
           Result.forEach(element => {
-               promises.push(CoinGeckoClient.coins.fetch(element.id_namecoin, {}).then(res => {
-                    object.push({ "id_coin": element.id_coin, "id": res.data.id, "name": res.data.name, "symbol": res.data.symbol, "image": res.data.image.large, "last_updated": res.data.last_updated, "usd": res.data.market_data.current_price.usd, "ars": res.data.market_data.current_price.ars, "eur": res.data.market_data.current_price.eur })
-               }))
+               try {
+                    if(element.id_coin===3) throw new Error('¡Ups error!')
+                    promises.push(CoinGeckoClient.coins.fetch(element.id_namecoin, {}).then(res => {
+                         object.push({ "id_coin": element.id_coin, "id": res.data.id, "name": res.data.name, "symbol": res.data.symbol, "image": res.data.image.large, "last_updated": res.data.last_updated, "usd": res.data.market_data.current_price.usd, "ars": res.data.market_data.current_price.ars, "eur": res.data.market_data.current_price.eur })
+                    }))
+               } catch (error) {
+                    console.log(error)
+               }
+
           })
 
           await Promise.all(promises)
@@ -118,7 +124,7 @@ CryptoController.top = async (req, res) => {
           }
 
 
-          setTimeout(() => { res.status(200).json(object) }, 0);
+      res.status(200).json(object) 
      } else {
           res.status(400).json({ message: "the order can only be asc or desc" });
      }
